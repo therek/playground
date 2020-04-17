@@ -1,0 +1,20 @@
+Vagrant.configure("2") do |config|
+  config.vm.define :workstation do |workstation|
+    workstation.vm.box = "centos/7"
+    workstation.vm.hostname = "workstation"
+
+    workstation.vm.provider :libvirt do |libvirt|
+      libvirt.memory = 4096
+    end
+
+    workstation.vm.provision "shell", path: "../scripts/prep.sh"
+    workstation.vm.provision "shell",
+      inline: "yum localinstall -y https://packages.chef.io/files/stable/chef-workstation/0.17.5/el/7/chef-workstation-0.17.5-1.el7.x86_64.rpm"
+    workstation.vm.provision "shell", path: "../scripts/chef-server.sh"
+  end
+
+  config.vm.define :node1 do |node1|
+    node1.vm.box = "centos/7"
+    node1.vm.hostname = "node1"
+  end
+end
