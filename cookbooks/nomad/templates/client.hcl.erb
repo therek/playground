@@ -1,0 +1,12 @@
+log_level = "INFO"
+data_dir = "<%= @cln_dir %>"
+name = "<%= @hostname %>"
+
+client {
+  enabled = true
+  servers = ["nomad.service.consul:4647"]
+}
+
+ports {
+  http = 5656
+}

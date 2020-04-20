@@ -1,0 +1,18 @@
+{
+    "data_dir": "<%= @data_dir %>",
+    "node_name": "<%= @hostname %>",
+    "server": true,
+    "leave_on_terminate": true,
+    "ui": true,
+
+    "client_addr": "0.0.0.0",
+
+    "advertise_addr": "<%= @ipaddress %>",
+    "bootstrap_expect": 3,
+    "retry_join": ["node1", "node2", "node3"],
+
+    "dns_config": {
+        "allow_stale": true,
+        "enable_truncate": true
+    }
+}
