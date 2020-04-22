@@ -14,6 +14,14 @@ services:
       - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
     depends_on:
       - blackbox
+  
+  cassandra:
+    image: cassandra:3.11
+    ports:
+      - 9042:9042
+    volumes:
+      - "./config/cassandra-init.sh:/cassandra-init.sh"
+    command: "sh /cassandra-init.sh"
 
   cortex:
     image: quay.io/cortexproject/cortex:v1.0.0
@@ -23,7 +31,7 @@ services:
       - "./config/cortex.yaml:/etc/cortex.yaml"
     command: -config.file=/etc/cortex.yaml
     depends_on:
-      - prometheus
+      - cassandra
 
   grafana:
     image: grafana/grafana:6.7.2
@@ -33,3 +41,4 @@ services:
       - "./config/grafana:/etc/grafana/provisioning"
     depends_on:
       - cortex
+      - prometheus

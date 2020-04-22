@@ -32,16 +32,17 @@ ingester:
 schema:
   configs:
   - from: 2019-07-29
-    store: boltdb
-    object_store: filesystem
+    store: cassandra
+    object_store: cassandra
     schema: v10
     index:
       prefix: index_
       period: 1w
+    chunks:
+      prefix: chunk_
+      period: 1w
 
 storage:
-  boltdb:
-    directory: /tmp/cortex/index
-
-  filesystem:
-    directory: /tmp/cortex/chunks
+  cassandra:
+    addresses: cassandra
+    keyspace: cortex
