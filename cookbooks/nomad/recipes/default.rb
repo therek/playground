@@ -34,6 +34,24 @@ template cln_config do
     notifies :restart, 'service[nomad-client]'
 end
 
+systemd_unit 'nomad-server.service' do
+    content({Unit: {
+            Description: 'Nomad Server',
+            After: 'network.target'
+        },
+        Service: {
+            ExecStart: "#{install_dir}/nomad agent -config=#{srv_config}",
+            Restart: 'on-failure'
+
+        },
+        Install: {
+            WantedBy: 'multi-user.target'
+
+        }
+    })
+    action [:create, :enable]
+    triggers_reload true
+end
 systemd_unit 'nomad-client.service' do
     content({Unit: {
             Description: 'Nomad Client',
@@ -56,6 +74,7 @@ end
 service 'nomad-server' do
     action [:enable, :start]
 end
+
 service 'nomad-client' do
     action [:enable, :start]
 end

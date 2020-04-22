@@ -5,6 +5,7 @@ pkgs = [
     'vim',
     'wget',
     'unzip',
+    'telnet',
     'tmux',
 ]
 

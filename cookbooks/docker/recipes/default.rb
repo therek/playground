@@ -7,6 +7,10 @@ end
 
 package 'docker-ce'
 
+sysctl 'vm.max_map_count' do
+    value 262144
+end
+
 service 'docker' do
     action [:enable, :start]
 end
