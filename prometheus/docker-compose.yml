@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  blackbox:
+    image: quay.io/prometheus/blackbox-exporter:v0.16.0
+    ports:
+      - 9115:9115
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.17.2
+    ports:
+      - 9090:9090
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
+    depends_on:
+      - blackbox
+
+  cortex:
+    image: quay.io/cortexproject/cortex:v1.0.0
+    ports:
+      - 9009:9009
+    volumes:
+      - "./config/cortex.yaml:/etc/cortex.yaml"
+    command: -config.file=/etc/cortex.yaml
+    depends_on:
+      - prometheus
+
+  grafana:
+    image: grafana/grafana:6.7.2
+    ports:
+      - 3000:3000
+    volumes:
+      - "./config/grafana:/etc/grafana/provisioning"
+    depends_on:
+      - cortex

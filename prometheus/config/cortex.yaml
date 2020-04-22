@@ -1,0 +1,47 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 9009
+
+  grpc_server_max_recv_msg_size: 104857600 #100MB
+  grpc_server_max_send_msg_size: 104857600 #100MB
+  grpc_server_max_concurrent_streams: 1000
+
+distributor:
+  shard_by_all_labels: true
+  pool:
+    health_check_ingesters: true
+
+ingester_client:
+  grpc_client_config:
+    max_recv_msg_size: 104857600 #100MB
+    max_send_msg_size: 104857600 #100MB
+    use_gzip_compression: true
+
+ingester:
+  lifecycler:
+    join_after: 0
+    final_sleep: 0s
+    num_tokens: 512
+
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+
+schema:
+  configs:
+  - from: 2019-07-29
+    store: boltdb
+    object_store: filesystem
+    schema: v10
+    index:
+      prefix: index_
+      period: 1w
+
+storage:
+  boltdb:
+    directory: /tmp/cortex/index
+
+  filesystem:
+    directory: /tmp/cortex/chunks
