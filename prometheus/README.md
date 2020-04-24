@@ -24,6 +24,7 @@ Then you can start the remaining containers:
 ## Links
 
 * Blackbox Exporter - http://localhost:9115/
+* Cassandra Exporteer - http://localhost:8080/
 * Cortex - http://localhost:9009/
 * Grafana - http://localhost:3000/
 * Prometheus - http://localhost:9090/

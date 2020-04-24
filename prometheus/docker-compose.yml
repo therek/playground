@@ -1,27 +1,31 @@
 version: "3"
 
 services:
+  cassandra:
+    image: cassandra:3.11
+    environment:
+      LOCAL_JMX: "no"
+    ports:
+      - 7199:7199
+      - 9042:9042
+    volumes:
+      - "./config/cassandra/cassandra-init.sh:/cassandra-init.sh"
+      - "./config/cassandra/jmxremote.password:/etc/cassandra/jmxremote.password"
+    command: "sh /cassandra-init.sh"
+
+  cassandra_exporter:
+    image: criteord/cassandra_exporter:2.3.5
+    environment:
+      CASSANDRA_EXPORTER_CONFIG_host: "cassandra:7199"
+      CASSANDRA_EXPORTER_CONFIG_user: "monitorRole"
+      CASSANDRA_EXPORTER_CONFIG_password: "monitor"
+    ports:
+      - 8080:8080
+
   blackbox:
     image: quay.io/prometheus/blackbox-exporter:v0.16.0
     ports:
       - 9115:9115
-
-  prometheus:
-    image: quay.io/prometheus/prometheus:v2.17.2
-    ports:
-      - 9090:9090
-    volumes:
-      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
-    depends_on:
-      - blackbox
-  
-  cassandra:
-    image: cassandra:3.11
-    ports:
-      - 9042:9042
-    volumes:
-      - "./config/cassandra-init.sh:/cassandra-init.sh"
-    command: "sh /cassandra-init.sh"
 
   cortex:
     image: quay.io/cortexproject/cortex:v1.0.0
@@ -32,6 +36,17 @@ services:
     command: -config.file=/etc/cortex.yaml
     depends_on:
       - cassandra
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.17.2
+    ports:
+      - 9090:9090
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
+    depends_on:
+      - blackbox
+      - cassandra_exporter
+      - cortex
 
   grafana:
     image: grafana/grafana:6.7.2
