@@ -1,0 +1,14 @@
+listener "tcp" {
+  address          = "0.0.0.0:8200"
+  cluster_address  = "<%= @ipaddress %>:8201"
+  tls_disable      = "true"
+}
+
+storage "consul" {
+  address = "127.0.0.1:8500"
+  path    = "vault/"
+}
+
+ui = true
+api_addr = "http://<%= @ipaddress %>:8200"
+cluster_addr = "https://<%= @ipaddress %>:8201"

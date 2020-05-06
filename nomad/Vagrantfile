@@ -18,9 +18,10 @@ Vagrant.configure("2") do |config|
         chef.arguments = "--chef-license accept"
         chef.cookbooks_path = "../cookbooks"
         chef.add_recipe "base"
+        chef.add_recipe "dnsmasq"
         chef.add_recipe "docker"
         chef.add_recipe "consul"
-        chef.add_recipe "nomad"
+        chef.add_recipe "vault"
         chef.add_recipe "nomad::nginx"
       end
     end
