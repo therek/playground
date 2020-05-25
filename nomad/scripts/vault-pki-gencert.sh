@@ -5,4 +5,4 @@
 
 VAULT_ADDR=${VAULT_ADDR:=http://127.0.0.1:8200}
 
-vault write pki_int/issue/example_com common_name="$1" ttl="8760h"
+vault write pki_int/issue/dc1_consul common_name="$1" alt_names="server.dc1.consul" ttl="8760h"

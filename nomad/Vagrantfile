@@ -2,7 +2,7 @@ Vagrant.configure("2") do |config|
   ["node1", "node2", "node3"].each do |node|
     config.vm.define node do |srv|
       srv.vm.box = "centos/7"
-      srv.vm.hostname = node
+      srv.vm.hostname = "#{node}.example.com"
 
       if Vagrant.has_plugin?("vagrant-libvirt")
         srv.vm.provider :libvirt do |libvirt|

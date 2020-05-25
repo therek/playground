@@ -2,6 +2,7 @@ version = '1.7.2'
 install_dir = '/usr/local/sbin'
 data_dir = '/data/consul'
 config_file = "#{data_dir}/consul.json"
+domain = 'dc1.consul'
 
 remote_file '/opt/consul.zip' do
     source "https://releases.hashicorp.com/consul/#{version}/consul_#{version}_linux_amd64.zip"
@@ -20,10 +21,23 @@ template config_file do
     source 'consul.json.erb'
     variables(
         :hostname => node[:hostname],
+        :domain => domain,
         :ipaddress => node[:ipaddress],
+        :ssl => false,
         :data_dir => data_dir,
     )
     notifies :restart, 'service[consul]'
+end
+
+template "#{config_file}-tls" do
+    source 'consul.json.erb'
+    variables(
+        :hostname => node[:hostname],
+        :domain => domain,
+        :ipaddress => node[:ipaddress],
+        :ssl => true,
+        :data_dir => data_dir,
+    )
 end
 
 systemd_unit 'consul.service' do

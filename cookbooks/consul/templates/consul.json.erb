@@ -11,6 +11,20 @@
     "bootstrap_expect": 3,
     "retry_join": ["node1", "node2", "node3"],
 
+<% if @ssl %>
+    "ports": {
+        "http": -1,
+        "https": 8500
+    },
+
+    "verify_incoming": false,
+    "verify_outgoing": true,
+    "verify_server_hostname": true,
+    "ca_file": "/vagrant/pki/<%= @domain %>_intermediate.crt",
+    "cert_file": "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.crt",
+    "key_file": "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.key",
+<% end %>
+
     "dns_config": {
         "allow_stale": true,
         "enable_truncate": true
