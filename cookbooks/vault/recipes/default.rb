@@ -2,6 +2,7 @@ version = '1.3.4'
 install_dir = '/usr/local/sbin'
 data_dir = '/data/vault'
 config_file = "#{data_dir}/vault.hcl"
+domain = 'dc1.consul'
 
 remote_file '/opt/vault.zip' do
   source "https://releases.hashicorp.com/vault/#{version}/vault_#{version}_linux_amd64.zip"
@@ -27,8 +28,21 @@ template config_file do
   source 'vault.hcl.erb'
   variables(
     :ipaddress => node[:ipaddress],
+    :hostname => node[:hostname],
+    :domain => domain,
+    :ssl => false
   )
   notifies :restart, 'service[vault]'
+end
+
+template "#{config_file}-tls" do
+  source 'vault.hcl.erb'
+  variables(
+    :ipaddress => node[:ipaddress],
+    :hostname => node[:hostname],
+    :domain => domain,
+    :ssl => true
+  )
 end
 
 systemd_unit 'vault.service' do

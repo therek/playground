@@ -1,11 +1,22 @@
 listener "tcp" {
   address          = "0.0.0.0:8200"
   cluster_address  = "<%= @ipaddress %>:8201"
+<% if @ssl %>
+  tls_disable      = "false"
+  tls_cert_file    = "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.chain.crt"
+  tls_key_file     = "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.key"
+<% else %>
   tls_disable      = "true"
+<% end %>
 }
 
 storage "consul" {
+<% if @ssl %>
+  address = "<%= @hostname %>.node.<%= @domain %>:8500"
+  scheme = "https"
+<% else %>
   address = "127.0.0.1:8500"
+<% end %>
   path    = "vault/"
 }
 
