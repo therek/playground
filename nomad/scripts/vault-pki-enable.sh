@@ -49,5 +49,9 @@ echo -n "Import signed intermediate certificate... "
 vault write pki_int/intermediate/set-signed certificate=@pki/${DOMAIN}_intermediate.crt
 
 echo -n "Create a role for generatic certificates... "
-vault write pki_int/roles/${DOMAIN//./_} allowed_domains="${DOMAIN}" \
-  allow_subdomains=true max_ttl="8760h"
+vault write pki_int/roles/${DOMAIN//./_} \
+  allowed_domains="${DOMAIN},node*" \
+  allow_glob_domains=true \
+  allow_subdomains=true \
+  allow_ip_sans=true \
+  max_ttl="8760h"
