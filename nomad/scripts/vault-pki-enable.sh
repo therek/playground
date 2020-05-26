@@ -6,7 +6,7 @@ DOMAIN='dc1.consul'
 
 mkdir -p pki
 
-echo -n "Enabling PKI... "
+echo -n "Enable PKI... "
 if [[ `vault secrets list |grep ^pki` ]]; then
   echo "Already enabled."
 else
@@ -25,7 +25,7 @@ vault write pki/config/urls \
   issuing_certificates="${VAULT_ADDR}/v1/pki/ca" \
   crl_distribution_points="${VAULT_ADDR}/v1/pki/crl"
 
-echo -n "Enabling intermediate PKI... "
+echo -n "Enable intermediate PKI... "
 if [[ `vault secrets list |grep ^pki_int` ]]; then
   echo "Already enabled."
 else

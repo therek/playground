@@ -18,7 +18,7 @@ Vault cluster:
 1. Use the first link to initialize the cluster and unseal
    the instance.
 
-1. Visit other Vault instances and to unseal them.
+1. Visit other Vault instances to unseal them too.
 
 ## Set up TLS communication 
 
@@ -34,17 +34,16 @@ To prepare own Vault-based PKI run following commands:
 
 ### Enable TLS in Consul
 
-First generate node certificates.
+First generate node certificates. This will generate and save CA certificates in `pki` directory.
 
         scripts/vault-pki-gencert.sh
 
-Then run following commands on each node:
+Then synchronized files (`vagrant rsync`) and run following commands on each node:
 
         cp /vagrant/pki/dc1.consul_intermediate.crt /etc/pki/ca-trust/source/anchors/
         update-ca-trust
-        systemctl stop consul
-        cp /data/consul/consul.json-tls /data/consul/consul.json
+        systemctl stop consul vault
+        cp /etc/consul/consul.json-tls /etc/consul/consul.json
+        cp /etc/vault/vault.hcl-tls /etc/vault/vault.hcl
         systemctl start consul
-        systemctl stop vault
-        cp /data/vault/vault.hcl-tls /data/vault/vault.hcl
         systemctl start vault

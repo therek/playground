@@ -1,8 +1,9 @@
 version = '1.3.4'
+domain = 'dc1.consul'
+
 install_dir = '/usr/local/sbin'
 data_dir = '/data/vault'
-config_file = "#{data_dir}/vault.hcl"
-domain = 'dc1.consul'
+config_dir = '/etc/vault'
 
 remote_file '/opt/vault.zip' do
   source "https://releases.hashicorp.com/vault/#{version}/vault_#{version}_linux_amd64.zip"
@@ -20,11 +21,13 @@ user 'vault' do
   home data_dir
 end
 
-directory data_dir do
-  recursive true
+[data_dir, config_dir].each do |dir|
+  directory dir do
+    recursive true
+  end
 end
 
-template config_file do
+template "#{config_dir}/vault.hcl" do
   source 'vault.hcl.erb'
   variables(
     :ipaddress => node[:ipaddress],
@@ -35,7 +38,7 @@ template config_file do
   notifies :restart, 'service[vault]'
 end
 
-template "#{config_file}-tls" do
+template "#{config_dir}/vault.hcl-tls" do
   source 'vault.hcl.erb'
   variables(
     :ipaddress => node[:ipaddress],
@@ -46,31 +49,31 @@ template "#{config_file}-tls" do
 end
 
 systemd_unit 'vault.service' do
-    content({Unit: {
-            Description: 'Vault Service',
-            Requires: 'network-online.target',
-            After: 'network-online.target'
-        },
-        Service: {
-            User: 'vault',
-            Group: 'vault',
-            PIDFile: '/var/run/vault.pid',
-            ExecStart: "#{install_dir}/vault server -config=#{config_file} -log-level=debug",
-            ExecReload: '/bin/kill -HUP $MAINPID',
-            KillMode: 'process',
-            KillSignal: 'SIGTERM',
-            Restart: 'on-failure',
-            RestartSec: '42s',
-            LimitMEMLOCK: 'infinity'
-        },
-        Install: {
-            WantedBy: 'multi-user.target'
-        }
-    })
-    action [:create, :enable]
-    triggers_reload true
+  content({Unit: {
+      Description: 'Vault Service',
+      Requires: 'network-online.target',
+      After: 'network-online.target'
+    },
+    Service: {
+      User: 'vault',
+      Group: 'vault',
+      PIDFile: '/var/run/vault.pid',
+      ExecStart: "#{install_dir}/vault server -config=#{config_dir}/vault.hcl -log-level=debug",
+      ExecReload: '/bin/kill -HUP $MAINPID',
+      KillMode: 'process',
+      KillSignal: 'SIGTERM',
+      Restart: 'on-failure',
+      RestartSec: '42s',
+      LimitMEMLOCK: 'infinity'
+    },
+    Install: {
+      WantedBy: 'multi-user.target'
+    }
+  })
+  action [:create, :enable]
+  triggers_reload true
 end
 
 service 'vault' do
-    action [:enable, :start]
+  action [:enable, :start]
 end
