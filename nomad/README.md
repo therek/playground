@@ -24,7 +24,7 @@ Vault cluster:
 
 First steps are to be done in default configuration without TLS enabled.
 
-### Prepare PKI
+### Prepare PKI on Vault
 
 To prepare own Vault-based PKI run following commands:
 
@@ -32,18 +32,40 @@ To prepare own Vault-based PKI run following commands:
         export VAULT_TOKEN="<TOKEN>"
         scripts/vault-pki-enable.sh
 
-### Enable TLS in Consul
+### Enable TLS in Consul and Vault
 
 First generate node certificates. This will generate and save CA certificates in `pki` directory.
 
         scripts/vault-pki-gencert.sh
 
-Then synchronized files (`vagrant rsync`) and run following commands on each node:
+Then synchronized files (`vagrant rsync`), log in to each server and go to local copy of Chef recepies and run:
 
-        cp /vagrant/pki/dc1.consul_intermediate.crt /etc/pki/ca-trust/source/anchors/
-        update-ca-trust
-        systemctl stop consul vault
-        cp /etc/consul/consul.json-tls /etc/consul/consul.json
-        cp /etc/vault/vault.hcl-tls /etc/vault/vault.hcl
-        systemctl start consul
-        systemctl start vault
+        cd /tmp/vagrant-chef/7487e6f2443849d4462e0a967a3b3a4a
+        chef-client -z -o consul::tls
+        chef-client -z -o vault::tls
+
+### Enable ACL in Consul
+
+This uses the root token for global management policy. Usually, that is not the best way to go in production environment.
+
+Long to each server and go to local copy of Chef recepies and run `consul::acl`.
+
+        cd /tmp/vagrant-chef/7487e6f2443849d4462e0a967a3b3a4a
+        chef-client -z -o consul::acl
+
+Run on one of the nodes:
+
+        export CONSUL_HTTP_ADDR=https://`hostname -I | awk '{print $1}'`:8500
+        consul acl bootstrap
+        export CONSUL_HTTP_TOKEN=<SecretID-from-bootstrap-output>
+        consul acl policy create -name dns -rules @/vagrant/acl/consul/consul-dns-policy.hcl
+
+Modify `/etc/consul/agent.hcl` on all nodes and add following. Restart Consul instance.
+
+        tokens = {
+          agent = "<SecretID-from-bootstrap-output"
+        }
+
+Modify `/etc/vault/vault.hcl` on all nodes and add following in the `storage` section. Restart Vault instance.
+
+        token = "<SecretID-from-bootstrap-output>"
