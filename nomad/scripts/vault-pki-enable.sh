@@ -55,3 +55,7 @@ vault write pki_int/roles/${DOMAIN//./_} \
   allow_subdomains=true \
   allow_ip_sans=true \
   max_ttl="8760h"
+
+echo -n "Prepare CA chain"
+cp pki/${DOMAIN}_intermediate.crt pki/${DOMAIN}_chain.crt
+cat pki/${DOMAIN}_CA.crt >> pki/${DOMAIN}_chain.crt

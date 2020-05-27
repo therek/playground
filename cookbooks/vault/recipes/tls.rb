@@ -1,6 +1,6 @@
 remote_file "Copy CA certificate" do 
-  path "/etc/pki/ca-trust/source/anchors/#{node['vault']['domain']}_intermediate.crt"
-  source "file:///vagrant/pki/#{node['vault']['domain']}_intermediate.crt"
+  path "/etc/pki/ca-trust/source/anchors/#{node['vault']['domain']}_chain.crt"
+  source "file:///vagrant/pki/#{node['vault']['domain']}_chain.crt"
   notifies :run, 'execute[update-ca-trust]', :immediately
 end
 

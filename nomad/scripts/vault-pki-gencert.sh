@@ -14,8 +14,9 @@ for node in node1 node2 node3; do
     ip_sans="$node_ip" \
     ttl="8760h" > $TMPFILE
   cat $TMPFILE | jq '.data.certificate' | xargs echo -e > pki/$node.node.${DOMAIN}.crt
-  cat $TMPFILE | jq '.data.certificate' | xargs echo -e > pki/$node.node.${DOMAIN}.chain.crt
   cat $TMPFILE | jq '.data.private_key' | xargs echo -e > pki/$node.node.${DOMAIN}.key
-  cat $TMPFILE | jq '.data.issuing_ca'  | xargs echo -e >> pki/$node.node.${DOMAIN}.crt
+  cp pki/$node.node.${DOMAIN}.crt pki/$node.node.${DOMAIN}.chain.crt
+  cat pki/${DOMAIN}_intermediate.crt >> pki/$node.node.${DOMAIN}.chain.crt
+  cat pki/${DOMAIN}_CA.crt >> pki/$node.node.${DOMAIN}.chain.crt
   rm $TMPFILE
 done
