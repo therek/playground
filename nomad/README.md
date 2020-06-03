@@ -44,6 +44,12 @@ Then synchronized files (`vagrant rsync`), log in to each server and go to local
         chef-client -z -o consul::tls
         chef-client -z -o vault::tls
 
+## Enable TLS in Nomad
+
+Run on one of the nodes:
+
+        chef-client -z -o nomad::tls
+
 ### Enable ACL in Consul
 
 This uses the root token for global management policy. Usually, that is not the best way to go in production environment.

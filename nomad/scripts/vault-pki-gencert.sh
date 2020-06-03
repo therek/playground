@@ -10,7 +10,7 @@ for node in node1 node2 node3; do
   node_ip=`vagrant ssh-config $node | awk '/HostName/ {print $2}'`
   vault write -format=json pki_int/issue/${DOMAIN//./_} \
     common_name="$node.node.${DOMAIN}" \
-    alt_names="server.${DOMAIN},$node" \
+    alt_names="server.${DOMAIN},server.global.nomad,$node" \
     ip_sans="$node_ip" \
     ttl="8760h" > $TMPFILE
   cat $TMPFILE | jq '.data.certificate' | xargs echo -e > pki/$node.node.${DOMAIN}.crt

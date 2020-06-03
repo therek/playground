@@ -6,3 +6,25 @@ server {
     enabled = true
     bootstrap_expect = 3
 }
+
+<% if @ssl %>
+consul {
+  address   = "<%= @hostname %>.node.<%= @domain %>:8500"
+  ssl       = true
+  ca_file   = "/vagrant/pki/<%= @domain %>_chain.crt"
+  cert_file = "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.chain.crt"
+  key_file  = "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.key"
+}
+
+tls {
+  http = true
+  rpc  = true
+
+  ca_file   = "/vagrant/pki/<%= @domain %>_chain.crt"
+  cert_file = "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.chain.crt"
+  key_file  = "/vagrant/pki/<%= @hostname %>.node.<%= @domain %>.key"
+
+  verify_server_hostname = true
+  verify_https_client    = false
+}
+<% end %>

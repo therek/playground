@@ -50,7 +50,7 @@ vault write pki_int/intermediate/set-signed certificate=@pki/${DOMAIN}_intermedi
 
 echo -n "Create a role for generatic certificates... "
 vault write pki_int/roles/${DOMAIN//./_} \
-  allowed_domains="${DOMAIN},node*" \
+  allowed_domains="${DOMAIN},global.nomad,node*" \
   allow_glob_domains=true \
   allow_subdomains=true \
   allow_ip_sans=true \
