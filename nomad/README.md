@@ -75,3 +75,7 @@ Modify `/etc/consul/agent.hcl` on all nodes and add following. Restart Consul in
 Modify `/etc/vault/vault.hcl` on all nodes and add following in the `storage` section. Restart Vault instance.
 
         token = "<SecretID-from-bootstrap-output>"
+
+Modify `/data/nomad/server.hcl` and `/data/nomad/client.hcl` on all nodes and add following  in the `consul` section. Restart `nomad-server` and `nomad-client` services.
+
+        token = "<SecretID-from-bootstrap-output>"
